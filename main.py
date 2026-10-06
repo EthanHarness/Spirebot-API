@@ -1,9 +1,3 @@
-from fastapi import FastAPI, HTTPException, Request
-from pydantic import BaseModel
-from typing import List, Optional
-
-app = FastAPI()
-
 # # 1. Define data model schema
 # class Item(BaseModel):
 #     id: int
@@ -48,32 +42,37 @@ app = FastAPI()
 #             return {"message": "Item successfully deleted"}
 #     raise HTTPException(status_code=404, detail="Item not found")
 
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from typing import List, Optional
+
+from RecordObjects.GameStateRecord import GameStateRecord
+
+app = FastAPI()
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    print("\n❌ --- FASTAPI VALIDATION ERROR ---")
+    for error in exc.errors():
+        # Prints exactly which field failed and why
+        print(f"Location: {error['loc']}")
+        print(f"Error Message: {error['msg']}")
+        print(f"Type of Error: {error['type']}\n")
+    print("-----------------------------------\n")
+    
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors()},
+    )
 
 class ContextResponse(BaseModel):
     context: str
 
-class CardRecord(BaseModel):
-    Id: str
-
-class GameState(BaseModel):
-    CurrentHp: int
-    MaxHp: int
-    MaxEnergy: int
-    Gold: int
-    PotionsSlotCount: int
-    OrbSlotCount: int
-
-    DrawPile: List[CardRecord]
-    DiscardPile: List[CardRecord]
-    ExhaustPil: List[CardRecord]
-
 #TODO: Parse input into objects
 @app.post("/context", status_code=201)
-async def repeat_context(game_state: Request):
-    body_bytes = await game_state.body()
-    game_state_str = body_bytes.decode('utf-8')
-
-    print("HERE")
-    print(game_state_str)
+async def repeat_context(game_state: GameStateRecord):
+    print(game_state)
     
     return {"context": "Random Stuff"}
