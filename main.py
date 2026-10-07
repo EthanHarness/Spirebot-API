@@ -70,9 +70,18 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 class ContextResponse(BaseModel):
     context: str
 
-#TODO: Parse input into objects
 @app.post("/context", status_code=201)
 async def repeat_context(game_state: GameStateRecord):
     print(game_state)
     
     return {"context": "Random Stuff"}
+
+#TODO: Parse input into objects
+# @app.post("/context", status_code=201)
+# async def repeat_context(game_state: Request):
+#     body_bytes = await game_state.body()
+#     game_state_str = body_bytes.decode("utf-8")
+    
+#     print(game_state_str)
+    
+#     return {"context": "Random Stuff"}

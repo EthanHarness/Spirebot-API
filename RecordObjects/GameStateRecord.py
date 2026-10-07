@@ -1,6 +1,9 @@
 from typing import List
 from pydantic import BaseModel
+
 from .CardRecord import CardRecord
+from .RelicRecord import RelicRecord
+from .PotionRecord import PotionRecord
 
 class GameStateRecord(BaseModel):
     currentHp: int
@@ -14,6 +17,9 @@ class GameStateRecord(BaseModel):
     discardPile: List[CardRecord]
     exhaustPile: List[CardRecord]
     handPile: List[CardRecord]
+
+    relics: List[RelicRecord]
+    potions: List[PotionRecord]
     
 
     
